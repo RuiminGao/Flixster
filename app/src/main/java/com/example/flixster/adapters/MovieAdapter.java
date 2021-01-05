@@ -16,14 +16,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.flixster.DetailActivity;
+import com.example.flixster.MainActivity;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
 import com.example.flixster.view_holders.ViewHolder1;
 import com.example.flixster.view_holders.ViewHolder2;
+import com.example.flixster.view_holders.ViewHolder3;
 
 import org.parceler.Parcels;
 
@@ -54,7 +57,16 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 break;
             case BACKDROP:
                 View v2 = inflater.inflate(R.layout.item_movie_popular, parent, false);
-                viewHolder = new ViewHolder2(v2);
+                switch (context.getResources().getConfiguration().orientation) {
+                    case Configuration.ORIENTATION_PORTRAIT:
+                        viewHolder = new ViewHolder2(v2);
+                        break;
+                    case Configuration.ORIENTATION_LANDSCAPE:
+                        viewHolder = new ViewHolder3(v2);
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + viewType);
+                }
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + viewType);
@@ -73,9 +85,20 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 container = vh1.getContainer();
                 break;
             case BACKDROP:
-                ViewHolder2 vh2 = (ViewHolder2) holder;
-                configureViewHolder2(vh2, position);
-                container = vh2.getContainer();
+                switch (context.getResources().getConfiguration().orientation) {
+                    case Configuration.ORIENTATION_PORTRAIT:
+                        ViewHolder2 vh2 = (ViewHolder2) holder;
+                        configureViewHolder2(vh2, position);
+                        container = vh2.getContainer();
+                        break;
+                    case Configuration.ORIENTATION_LANDSCAPE:
+                        ViewHolder3 vh3 = (ViewHolder3) holder;
+                        configureViewHolder3(vh3, position);
+                        container = vh3.getContainer();
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + holder.getItemViewType());
+                }
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + holder.getItemViewType());
@@ -88,6 +111,12 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 context.startActivity(i);
             }
         });
+    }
+
+    private void configureViewHolder3(ViewHolder3 vh3, int position) {
+        vh3.getTvTitle().setText(movies.get(position).getTitle());
+        vh3.getTvOverview().setText(movies.get(position).getOverview());
+        Glide.with(context).load(movies.get(position).getBackdropPath()).placeholder(R.drawable.ic_iconfinder_gallery_1214963).into(vh3.getIvBackdrop());
     }
 
     private void configureViewHolder2(ViewHolder2 vh2, int position) {
@@ -116,7 +145,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        if (movies.get(position).getVote() >= 5.0 && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (movies.get(position).getVote() >= 5.0) {
             return BACKDROP;
         } else {
             return POSTER;
