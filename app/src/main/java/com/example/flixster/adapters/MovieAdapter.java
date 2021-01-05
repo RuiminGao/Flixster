@@ -2,6 +2,8 @@ package com.example.flixster.adapters;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             default:
                 View v3 = inflater.inflate(R.layout.item_movie, parent, false);
                 viewHolder = new ViewHolder1(v3);
+                break;
         }
         return viewHolder;
 
@@ -79,10 +82,12 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         vh1.getTvTitle().setText(movies.get(position).getTitle());
         vh1.getTvOverview().setText(movies.get(position).getOverview());
         String imageURL;
-        if(movies.get(position).getVote() >= 5.0) {
+        if (movies.get(position).getVote() >= 5.0) {
             imageURL = movies.get(position).getBackdropPath();
+            vh1.getIvPoster().getLayoutParams().width = 1400;
         } else {
             imageURL = movies.get(position).getPosterPath();
+            vh1.getIvPoster().getLayoutParams().width = 500;
         }
         Glide.with(context).load(imageURL).placeholder(R.drawable.ic_iconfinder_gallery_1214963).into(vh1.getIvPoster());
     }
@@ -102,29 +107,4 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        TextView tvTitle;
-        TextView tvOverview;
-        ImageView ivPoster;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvOverview = itemView.findViewById(R.id.tvOverview);
-            ivPoster = itemView.findViewById(R.id.ivPoster);
-        }
-
-        public void bind(Movie movie) {
-            tvTitle.setText(movie.getTitle());
-            tvOverview.setText(movie.getOverview());
-            String imageURL;
-            if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                imageURL = movie.getBackdropPath();
-            } else {
-                imageURL = movie.getPosterPath();
-            }
-            Glide.with(context).load(imageURL).placeholder(R.drawable.ic_iconfinder_gallery_1214963).into(ivPoster);
-        }
-    }
 }
