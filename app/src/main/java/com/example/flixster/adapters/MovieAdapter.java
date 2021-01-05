@@ -1,7 +1,9 @@
 package com.example.flixster.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Parcel;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -9,16 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.flixster.DetailActivity;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
 import com.example.flixster.view_holders.ViewHolder1;
 import com.example.flixster.view_holders.ViewHolder2;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -50,28 +57,37 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 viewHolder = new ViewHolder2(v2);
                 break;
             default:
-                View v3 = inflater.inflate(R.layout.item_movie, parent, false);
-                viewHolder = new ViewHolder1(v3);
-                break;
+                throw new IllegalStateException("Unexpected value: " + viewType);
         }
         return viewHolder;
-
-       // Log.d("MovieAdapter", "onCreateViewHolder");
-     //   View movieView = LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        RelativeLayout container;
+
         switch (holder.getItemViewType()) {
             case POSTER:
                 ViewHolder1 vh1 = (ViewHolder1) holder;
                 configureViewHolder1(vh1, position);
+                container = vh1.getContainer();
                 break;
             case BACKDROP:
                 ViewHolder2 vh2 = (ViewHolder2) holder;
                 configureViewHolder2(vh2, position);
+                container = vh2.getContainer();
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + holder.getItemViewType());
         }
+        container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, DetailActivity.class);
+                i.putExtra("movie", Parcels.wrap(movies.get(position)));
+                context.startActivity(i);
+            }
+        });
     }
 
     private void configureViewHolder2(ViewHolder2 vh2, int position) {
