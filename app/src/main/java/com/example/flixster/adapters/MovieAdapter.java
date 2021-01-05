@@ -20,7 +20,10 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.flixster.DetailActivity;
+import com.example.flixster.GlideApp;
 import com.example.flixster.MainActivity;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
@@ -31,6 +34,8 @@ import com.example.flixster.view_holders.ViewHolder3;
 import org.parceler.Parcels;
 
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -116,25 +121,19 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private void configureViewHolder3(ViewHolder3 vh3, int position) {
         vh3.getTvTitle().setText(movies.get(position).getTitle());
         vh3.getTvOverview().setText(movies.get(position).getOverview());
-        Glide.with(context).load(movies.get(position).getBackdropPath()).placeholder(R.drawable.ic_iconfinder_gallery_1214963).into(vh3.getIvBackdrop());
+        GlideApp.with(context).load(movies.get(position).getBackdropPath()).placeholder(R.drawable.ic_iconfinder_gallery_1214963).transform(new RoundedCornersTransformation(30,0)).into(vh3.getIvBackdrop());
     }
 
     private void configureViewHolder2(ViewHolder2 vh2, int position) {
-        Glide.with(context).load(movies.get(position).getBackdropPath()).placeholder(R.drawable.ic_iconfinder_gallery_1214963).into(vh2.getIvBackdrop());
+        GlideApp.with(context).load(movies.get(position).getBackdropPath()).placeholder(R.drawable.ic_iconfinder_gallery_1214963).transform(new RoundedCornersTransformation(30,0)).into(vh2.getIvBackdrop());
     }
 
     private void configureViewHolder1(ViewHolder1 vh1, int position) {
         vh1.getTvTitle().setText(movies.get(position).getTitle());
         vh1.getTvOverview().setText(movies.get(position).getOverview());
         String imageURL;
-        if (movies.get(position).getVote() >= 5.0) {
-            imageURL = movies.get(position).getBackdropPath();
-            vh1.getIvPoster().getLayoutParams().width = 1400;
-        } else {
-            imageURL = movies.get(position).getPosterPath();
-            vh1.getIvPoster().getLayoutParams().width = 500;
-        }
-        Glide.with(context).load(imageURL).placeholder(R.drawable.ic_iconfinder_gallery_1214963).into(vh1.getIvPoster());
+        imageURL = movies.get(position).getPosterPath();
+        GlideApp.with(context).load(imageURL).transform(new RoundedCornersTransformation(30,0)).placeholder(R.drawable.ic_iconfinder_gallery_1214963).into(vh1.getIvPoster());
     }
 
 
